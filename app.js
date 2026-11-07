@@ -5,6 +5,11 @@
 // ⬇️ CREDENZIALI JSONBIN
 const JSONBIN_ID  = '6aef2efaac6210605a755bd5';
 const JSONBIN_KEY = '$2a$10$k4I2u1RY4QjfSRFgtD5I6uWIQHEZ940Z5jK/KH9pQ1d87n8ITx33y';
+// Bin separato per le fotografie: ogni foto diventa un suo "$n" (raw storage)
+// raggiungibile via https://api.jsonbin.io/v3/b/<ID>/n/<nome-file>.
+// Così il catalogo resta minuscolo e non si scontra col limite dei 100 KB.
+const PHOTOS_PATH = 'foto';
+const PHOTO_BASE  = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}/n/${PHOTOS_PATH}`;
 const STORAGE_KEY = 'anita_borse_catalogo_v1';
 const CLOUD_ENABLED = Boolean(JSONBIN_ID && JSONBIN_KEY);
 
@@ -77,10 +82,11 @@ class CatalogStore {
         if (res.ok) {
           const json = await res.json();
           const data = json.record;
-          if (Array.isArray(data) && data.length > 0) {
+          // Una lista vuota è un catalogo valido: significa che hai cancellato tutto.
+          // Solo se il bin non contiene una lista torniamo alla cache locale.
+          if (Array.isArray(data)) {
             this.borse = data;
             this.saveToLocal();
-            window.dispatchEvent(new CustomEvent('anita:catalog-updated', { detail: this.borse }));
             console.log('✅ Catalogo caricato dal cloud:', this.borse.length, 'borse');
             return;
           }
@@ -113,15 +119,53 @@ class CatalogStore {
     }
   }
 
+  // Carica una foto (data URL base64) nel raw storage di JSONBin e torna il suo URL pubblico.
+  async uploadPhoto(dataUrl, id) {
+    if (!CLOUD_ENABLED) return dataUrl;
+    // Se non è una foto inline (è già un URL remoto o un segnaposto), non c'è niente da caricare.
+    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) return dataUrl;
+
+    const nome = `${id}.img`;
+    const mime = dataUrl.slice(5, dataUrl.indexOf(';')) || 'image/webp';
+    const b64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+
+    const res = await fetch(`${PHOTO_BASE}/${nome}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'X-Access-Key': JSONBIN_KEY,
+        'X-Bin-Meta': 'false'
+      },
+      body: Uint8Array.from(atob(b64), c => c.charCodeAt(0))
+    });
+
+    if (!res.ok) {
+      const t = await res.text();
+      throw new Error(`Foto non caricata (${res.status}): ${t.slice(0, 200)}`);
+    }
+    // L'URL pubblico della foto, leggibile da chiunque senza chiave.
+    return `${PHOTO_BASE}/${nome}?mime=${encodeURIComponent(mime)}&v=${Date.now()}`;
+  }
+
+  // Elimina la foto dal cloud (best-effort: non blocca il resto se fallisce).
+  async deletePhoto(fotoUrl, id) {
+    if (!CLOUD_ENABLED || !fotoUrl || !fotoUrl.startsWith(PHOTO_BASE)) return;
+    try {
+      await fetch(`${PHOTO_BASE}/${id}.img`, {
+        method: 'DELETE',
+        headers: { 'X-Access-Key': JSONBIN_KEY }
+      });
+    } catch (e) { /* non critico */ }
+  }
+
   async saveAll() {
-  this.saveToLocal();
-  if (!CLOUD_ENABLED) return;
-  
-  try {
+    this.saveToLocal();
+    if (!CLOUD_ENABLED) return;
+
     const jsonStr = JSON.stringify(this.borse);
     const sizeKB = (jsonStr.length / 1024).toFixed(2);
     console.log('📤 Tentativo salvataggio cloud...', this.borse.length, 'borse,', sizeKB, 'KB');
-    
+
     const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
       method: 'PUT',
       headers: {
@@ -130,19 +174,14 @@ class CatalogStore {
       },
       body: jsonStr
     });
-    
-    if (res.ok) {
-      console.log('✅ Salvato sul cloud con successo');
-    } else {
+
+    if (!res.ok) {
       const errorText = await res.text();
       console.error('❌ Errore salvataggio cloud:', res.status, res.statusText, errorText);
-      alert(`Errore salvataggio: ${res.status} - ${errorText}`);
+      throw new Error(`Cloud ${res.status}: ${errorText.slice(0, 200)}`);
     }
-  } catch (e) {
-    console.error('❌ Errore rete:', e);
-    alert('Errore di rete: ' + e.message);
+    console.log('✅ Salvato sul cloud con successo');
   }
-}
 
   getAll() { return [...this.borse]; }
   getById(id) { return this.borse.find(b => b.id === String(id)); }
@@ -153,35 +192,70 @@ class CatalogStore {
     return String(max + 1).padStart(2, '0');
   }
 
+  // Salva (o aggiorna) una borsa. Se arriva una foto inline, prima la carica
+  // nel cloud e poi salva il catalogo con il suo URL. Torna l'id della borsa.
   async saveItem(data) {
     const isEdit = Boolean(data.id);
+    let id;
+    let vecchioFoto = null;
+
     if (isEdit) {
       const idx = this.borse.findIndex(b => b.id === String(data.id));
       if (idx === -1) throw new Error('Borsa non trovata');
-      this.borse[idx] = { ...this.borse[idx], ...data };
+      id = String(data.id);
+      vecchioFoto = this.borse[idx].foto;
     } else {
-      const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
-      const num = data.num || this.getNextNum();
+      id = Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
+    }
+
+    // La foto: se è un data URL va caricata su JSONBin; altrimenti è già un URL.
+    let fotoFinale = data.foto || '';
+    if (fotoFinale.startsWith('data:image/')) {
+      fotoFinale = await this.uploadPhoto(fotoFinale, id);
+    } else if (!fotoFinale) {
+      fotoFinale = `https://picsum.photos/seed/borsa-${id}/600/750`;
+    }
+
+    const pulito = { ...data };
+    delete pulito.id;
+    delete pulito.foto_url;
+    pulito.foto = fotoFinale;
+
+    if (isEdit) {
+      const idx = this.borse.findIndex(b => b.id === id);
+      this.borse[idx] = { ...this.borse[idx], ...pulito };
+      // Se la foto è stata sostituita, libera quella vecchia dal cloud.
+      if (vecchioFoto && vecchioFoto !== fotoFinale && vecchioFoto.startsWith(PHOTO_BASE)) {
+        this.deletePhoto(vecchioFoto, id + '.old');
+      }
+    } else {
       this.borse.unshift({
-        id, num,
-        nome: data.nome || 'Borsa senza nome',
-        cat: data.cat || 'tote',
-        anno: data.anno || new Date().getFullYear().toString(),
-        materiali: data.materiali || '',
-        misure: data.misure || '',
-        ore: data.ore || '',
-        stato: data.stato || 'Disponibile',
-        statoColore: data.statoColore || '--oliva',
-        foto: data.foto || `https://picsum.photos/seed/borsa-${id}/600/750`,
-        nota: data.nota || ''
+        id,
+        num: pulito.num || this.getNextNum(),
+        nome: pulito.nome || 'Borsa senza nome',
+        cat: pulito.cat || 'tote',
+        anno: pulito.anno || new Date().getFullYear().toString(),
+        materiali: pulito.materiali || '',
+        misure: pulito.misure || '',
+        ore: pulito.ore || '',
+        stato: pulito.stato || 'Disponibile',
+        statoColore: pulito.statoColore || '--oliva',
+        foto: fotoFinale,
+        nota: pulito.nota || ''
       });
     }
+
     await this.saveAll();
+    return id;
   }
 
   async deleteItem(id) {
-    this.borse = this.borse.filter(b => b.id !== String(id));
+    const b = this.borse.find(x => x.id === String(id));
+    this.borse = this.borse.filter(x => x.id !== String(id));
     await this.saveAll();
+    if (b && b.foto && b.foto.startsWith(PHOTO_BASE)) {
+      this.deletePhoto(b.foto, String(id));
+    }
   }
 
   async resetToDefault() {
@@ -483,29 +557,34 @@ function initAdminUI() {
     }
   });
 
-  formBorsa.addEventListener('submit', e => {
+  const btnSalva = formBorsa.querySelector('button[type="submit"]');
+
+  formBorsa.addEventListener('submit', async e => {
     e.preventDefault();
     const fd = new FormData(formBorsa);
     const data = Object.fromEntries(fd.entries());
 
-    if (currentFoto) {
-      data.foto = currentFoto;
-    } else if (data.foto_url) {
-      data.foto = data.foto_url;
-    } else {
-      data.foto = `https://picsum.photos/seed/borsa-${Date.now()}/600/750`;
-    }
-    delete data.foto_url;
+    // La foto: prima quella scelta/caricata, poi l'URL digitato a mano.
+    data.foto = currentFoto || (fotoUrl.value || '').trim() || '';
     data.statoColore = fd.get('statoColore') || '--oliva';
     if (currentEditId) data.id = currentEditId;
 
+    const eraModifica = Boolean(currentEditId);
+    btnSalva.disabled = true;
+    btnSalva.textContent = '⏳ Salvaggio…';
+
     try {
-      window.catalogStore.saveItem(data);
+      await window.catalogStore.saveItem(data);
       chiudiModale();
       renderGrid(cercaInput.value);
-      showToast(currentEditId ? 'Borsa aggiornata! ✨' : 'Nuova borsa aggiunta! ✨');
+      showToast(eraModifica ? 'Borsa aggiornata! ✨' : 'Nuova borsa aggiunta e pubblicata! ✨');
     } catch (err) {
-      alert('Errore salvataggio: ' + err.message);
+      console.error(err);
+      alert('Non ho potuto salvare: ' + err.message);
+      showToast('Salvataggio fallito — riprova.');
+    } finally {
+      btnSalva.disabled = false;
+      btnSalva.textContent = '💾 Salva Borsa';
     }
   });
 
