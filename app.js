@@ -3,8 +3,8 @@
    ============================================================ */
 
 // ⬇️ CREDENZIALI JSONBIN
-const JSONBIN_ID  = '6aef2940ac6210605a754d38';
-const JSONBIN_KEY = '$2a$10$JvMFXe9KvrjfHlQPGgBA1OW8ZY0uyozTFR9LOoQgQpfUpA1uD51D.';
+const JSONBIN_ID  = '6aef2efaac6210605a755bd5';
+const JSONBIN_KEY = '$2a$10$k4I2u1RY4QjfSRFgtD5I6uWIQHEZ940Z5jK/KH9pQ1d87n8ITx33y';
 const STORAGE_KEY = 'anita_borse_catalogo_v1';
 const CLOUD_ENABLED = Boolean(JSONBIN_ID && JSONBIN_KEY);
 
