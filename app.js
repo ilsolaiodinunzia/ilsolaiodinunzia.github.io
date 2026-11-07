@@ -2,9 +2,9 @@
    IL SOLAIO DI NUNZIA — Store & UI Controller (con sync cloud)
    ============================================================ */
 
-// ⬇️ INSERISCI QUI LE TUE CREDENZIALI JSONBIN
-const JSONBIN_ID  = '6aef2940ac6210605a754d38';        // es. '64f8a2b1cd5e85...'
-const JSONBIN_KEY = '$2a$10$JvMFXe9KvrjfHlQPGgBA1OW8ZY0uyozTFR9LOoQgQpfUpA1uD51D.';    // access key con permessi read/write
+// ⬇️ CREDENZIALI JSONBIN
+const JSONBIN_ID  = '6aef2940ac6210605a754d38';
+const JSONBIN_KEY = '$2a$10$JvMFXe9KvrjfHlQPGgBA1OW8ZY0uyozTFR9LOoQgQpfUpA1uD51D.';
 const STORAGE_KEY = 'anita_borse_catalogo_v1';
 const CLOUD_ENABLED = Boolean(JSONBIN_ID && JSONBIN_KEY);
 
@@ -79,13 +79,14 @@ class CatalogStore {
           const data = json.record;
           if (Array.isArray(data) && data.length > 0) {
             this.borse = data;
-            this.saveToLocal(); // sincronizzo anche localStorage
+            this.saveToLocal();
             window.dispatchEvent(new CustomEvent('anita:catalog-updated', { detail: this.borse }));
+            console.log('✅ Catalogo caricato dal cloud:', this.borse.length, 'borse');
             return;
           }
         }
       } catch (e) {
-        console.warn('Cloud non raggiungibile, uso cache locale:', e);
+        console.warn('⚠️ Cloud non raggiungibile, uso cache locale:', e);
       }
     }
 
@@ -112,12 +113,11 @@ class CatalogStore {
     }
   }
 
-  // Salva sia in locale sia nel cloud
   async saveAll() {
     this.saveToLocal();
     if (!CLOUD_ENABLED) return;
     try {
-      await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -125,8 +125,13 @@ class CatalogStore {
         },
         body: JSON.stringify(this.borse)
       });
+      if (res.ok) {
+        console.log('✅ Salvato sul cloud');
+      } else {
+        console.warn('⚠️ Errore salvataggio cloud:', res.status);
+      }
     } catch (e) {
-      console.warn('Salvataggio cloud fallito (i dati restano in locale):', e);
+      console.warn('⚠️ Salvataggio cloud fallito:', e);
     }
   }
 
@@ -229,6 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (document.querySelector('.griglia')) initPublicUI();
   if (document.querySelector('.auth-wrapper')) initAdminUI();
 });
+
 /* ---------- INDEX (catalogo pubblico) ---------- */
 function initPublicUI() {
   const griglia = document.querySelector('.griglia');
@@ -325,7 +331,6 @@ function initAdminUI() {
   let currentEditId = null;
   let currentFoto   = '';
 
-  /* ----- Autenticazione ----- */
   function showAuth() {
     authWrapper.style.display = 'flex';
     adminHeader.style.display = 'none';
@@ -355,7 +360,6 @@ function initAdminUI() {
     showAuth();
   });
 
-  /* ----- Griglia admin ----- */
   function renderGrid(filtra = '') {
     const borse = window.catalogStore.getAll();
     statNum.textContent = borse.length;
@@ -402,7 +406,6 @@ function initAdminUI() {
 
   cercaInput.addEventListener('input', e => renderGrid(e.target.value));
 
-  /* ----- Modale ----- */
   function apriModale(id = null) {
     currentEditId = id;
     currentFoto = '';
@@ -447,7 +450,6 @@ function initAdminUI() {
   modalChiudiBtns.forEach(b => b.addEventListener('click', chiudiModale));
   modal.addEventListener('click', e => { if (e.target === modal) chiudiModale(); });
 
-  /* ----- Upload foto ----- */
   fotoUpload.addEventListener('click', () => fotoFile.click());
 
   fotoFile.addEventListener('change', async e => {
@@ -472,7 +474,6 @@ function initAdminUI() {
     }
   });
 
-  /* ----- Submit form ----- */
   formBorsa.addEventListener('submit', e => {
     e.preventDefault();
     const fd = new FormData(formBorsa);
@@ -486,7 +487,6 @@ function initAdminUI() {
       data.foto = `https://picsum.photos/seed/borsa-${Date.now()}/600/750`;
     }
     delete data.foto_url;
-
     data.statoColore = fd.get('statoColore') || '--oliva';
     if (currentEditId) data.id = currentEditId;
 
@@ -500,7 +500,6 @@ function initAdminUI() {
     }
   });
 
-  /* ----- Backup ----- */
   btnDownload.addEventListener('click', () => {
     const dataStr = window.catalogStore.exportJSON();
     const blob = new Blob([dataStr], { type: 'application/json' });
@@ -539,7 +538,6 @@ function initAdminUI() {
     }
   });
 
-  /* ----- Avvio ----- */
   if (sessionStorage.getItem('admin_logged') === '1') {
     showAdmin();
   } else {
