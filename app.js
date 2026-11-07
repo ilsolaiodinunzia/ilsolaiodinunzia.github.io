@@ -1,6 +1,12 @@
 /* ============================================================
-   IL SOLAIO DI NUNZIA — Store & UI Controller
+   IL SOLAIO DI NUNZIA — Store & UI Controller (con sync cloud)
    ============================================================ */
+
+// ⬇️ INSERISCI QUI LE TUE CREDENZIALI JSONBIN
+const JSONBIN_ID  = '6aef2940ac6210605a754d38';        // es. '64f8a2b1cd5e85...'
+const JSONBIN_KEY = '$2a$10$JvMFXe9KvrjfHlQPGgBA1OW8ZY0uyozTFR9LOoQgQpfUpA1uD51D.';    // access key con permessi read/write
+const STORAGE_KEY = 'anita_borse_catalogo_v1';
+const CLOUD_ENABLED = Boolean(JSONBIN_ID && JSONBIN_KEY);
 
 const DEFAULT_BORSE = [
   { id:"01", num:"01", nome:"Mimosa", cat:"tote", anno:"2024",
@@ -55,25 +61,44 @@ const DEFAULT_BORSE = [
     nota:"La mia prima borsa. Storta, sbilenca, imperfetta. La tengo appesa dove la vedo, come promemoria." }
 ];
 
-const STORAGE_KEY = 'anita_borse_catalogo_v1';
-
 class CatalogStore {
   constructor() {
     this.borse = [];
-    this.init();
+    this.ready = this.init();
   }
 
-  init() {
+  async init() {
+    // 1. Provo a caricare dal cloud
+    if (CLOUD_ENABLED) {
+      try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
+          headers: { 'X-Access-Key': JSONBIN_KEY }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          const data = json.record;
+          if (Array.isArray(data) && data.length > 0) {
+            this.borse = data;
+            this.saveToLocal(); // sincronizzo anche localStorage
+            window.dispatchEvent(new CustomEvent('anita:catalog-updated', { detail: this.borse }));
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('Cloud non raggiungibile, uso cache locale:', e);
+      }
+    }
+
+    // 2. Fallback: localStorage
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         this.borse = JSON.parse(stored);
       } else {
         this.borse = [...DEFAULT_BORSE];
-        this.saveToLocal();
+        await this.saveAll();
       }
     } catch (e) {
-      console.warn('Errore lettura localStorage:', e);
       this.borse = [...DEFAULT_BORSE];
     }
   }
@@ -83,7 +108,25 @@ class CatalogStore {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.borse));
       window.dispatchEvent(new CustomEvent('anita:catalog-updated', { detail: this.borse }));
     } catch (e) {
-      console.error('Errore salvataggio:', e);
+      console.error('Errore salvataggio locale:', e);
+    }
+  }
+
+  // Salva sia in locale sia nel cloud
+  async saveAll() {
+    this.saveToLocal();
+    if (!CLOUD_ENABLED) return;
+    try {
+      await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Key': JSONBIN_KEY
+        },
+        body: JSON.stringify(this.borse)
+      });
+    } catch (e) {
+      console.warn('Salvataggio cloud fallito (i dati restano in locale):', e);
     }
   }
 
@@ -96,7 +139,7 @@ class CatalogStore {
     return String(max + 1).padStart(2, '0');
   }
 
-  saveItem(data) {
+  async saveItem(data) {
     const isEdit = Boolean(data.id);
     if (isEdit) {
       const idx = this.borse.findIndex(b => b.id === String(data.id));
@@ -105,7 +148,7 @@ class CatalogStore {
     } else {
       const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 5);
       const num = data.num || this.getNextNum();
-      const item = {
+      this.borse.unshift({
         id, num,
         nome: data.nome || 'Borsa senza nome',
         cat: data.cat || 'tote',
@@ -117,32 +160,31 @@ class CatalogStore {
         statoColore: data.statoColore || '--oliva',
         foto: data.foto || `https://picsum.photos/seed/borsa-${id}/600/750`,
         nota: data.nota || ''
-      };
-      this.borse.unshift(item);
+      });
     }
-    this.saveToLocal();
+    await this.saveAll();
   }
 
-  deleteItem(id) {
+  async deleteItem(id) {
     this.borse = this.borse.filter(b => b.id !== String(id));
-    this.saveToLocal();
+    await this.saveAll();
   }
 
-  resetToDefault() {
+  async resetToDefault() {
     this.borse = [...DEFAULT_BORSE];
-    this.saveToLocal();
+    await this.saveAll();
   }
 
   exportJSON() { return JSON.stringify(this.borse, null, 2); }
 
-  importJSON(jsonStr) {
+  async importJSON(jsonStr) {
     const parsed = JSON.parse(jsonStr);
     if (!Array.isArray(parsed)) throw new Error('Il file JSON deve contenere una lista');
     this.borse = parsed;
-    this.saveToLocal();
+    await this.saveAll();
   }
 
-  static compressImage(file, maxWidth = 1000, quality = 0.82) {
+  static compressImage(file, maxWidth = 1000, quality = 0.75) {
     return new Promise((resolve, reject) => {
       if (!file || !file.type.startsWith('image/')) {
         return reject(new Error('File immagine non valido'));
@@ -180,13 +222,13 @@ class CatalogStore {
 window.catalogStore = new CatalogStore();
 
 /* ============================================================
-   AVVIO UI
+   AVVIO UI — aspetta che il catalogo sia pronto
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await window.catalogStore.ready;
   if (document.querySelector('.griglia')) initPublicUI();
   if (document.querySelector('.auth-wrapper')) initAdminUI();
 });
-
 /* ---------- INDEX (catalogo pubblico) ---------- */
 function initPublicUI() {
   const griglia = document.querySelector('.griglia');
