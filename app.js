@@ -114,26 +114,35 @@ class CatalogStore {
   }
 
   async saveAll() {
-    this.saveToLocal();
-    if (!CLOUD_ENABLED) return;
-    try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Access-Key': JSONBIN_KEY
-        },
-        body: JSON.stringify(this.borse)
-      });
-      if (res.ok) {
-        console.log('✅ Salvato sul cloud');
-      } else {
-        console.warn('⚠️ Errore salvataggio cloud:', res.status);
-      }
-    } catch (e) {
-      console.warn('⚠️ Salvataggio cloud fallito:', e);
+  this.saveToLocal();
+  if (!CLOUD_ENABLED) return;
+  
+  try {
+    const jsonStr = JSON.stringify(this.borse);
+    const sizeKB = (jsonStr.length / 1024).toFixed(2);
+    console.log('📤 Tentativo salvataggio cloud...', this.borse.length, 'borse,', sizeKB, 'KB');
+    
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Access-Key': JSONBIN_KEY
+      },
+      body: jsonStr
+    });
+    
+    if (res.ok) {
+      console.log('✅ Salvato sul cloud con successo');
+    } else {
+      const errorText = await res.text();
+      console.error('❌ Errore salvataggio cloud:', res.status, res.statusText, errorText);
+      alert(`Errore salvataggio: ${res.status} - ${errorText}`);
     }
+  } catch (e) {
+    console.error('❌ Errore rete:', e);
+    alert('Errore di rete: ' + e.message);
   }
+}
 
   getAll() { return [...this.borse]; }
   getById(id) { return this.borse.find(b => b.id === String(id)); }
