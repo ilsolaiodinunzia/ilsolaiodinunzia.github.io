@@ -1,0 +1,541 @@
+/* ============================================================
+   LE BORSE DI ANITA — Pannello Admin Mobile & Desktop
+   ============================================================ */
+
+:root{
+  --carta:#faeef0;
+  --carta-2:#fff9f9;
+  --carta-3:#f4e1e5;
+  --inchiostro:#472632;
+  --inchiostro-soft:rgba(71,38,50,.62);
+  --terra:#c44d73;
+  --terra-scuro:#963457;
+  --oliva:#a86f85;
+  --senape:#dd8fae;
+  --filo:#d9b6c1;
+  --nastro:rgba(236,166,190,.55);
+  --verde:#3a8a5f;
+  --ombra:4px 6px 0 rgba(71,38,50,.12);
+  --ombra-forte:7px 9px 0 rgba(71,38,50,.16);
+  --r:6px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:'Karla',sans-serif;
+  background:var(--carta);
+  color:var(--inchiostro);
+  line-height:1.5;
+  min-height:100vh;
+  padding-bottom:60px;
+}
+
+h1,h2,h3,h4{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+}
+
+.caveat{
+  font-family:'Caveat',cursive;
+  font-size:1.4rem;
+  color:var(--terra-scuro);
+}
+
+/* ---- SCHERMO DI LOGIN / AUTENTICAZIONE ---- */
+.auth-wrapper{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:20px;
+}
+.auth-box{
+  background:var(--carta-2);
+  border:2px solid var(--inchiostro);
+  border-radius:12px;
+  box-shadow:var(--ombra-forte);
+  padding:34px 28px;
+  max-width:420px;
+  width:100%;
+  text-align:center;
+}
+.auth-logo{
+  font-family:'Fraunces',serif;
+  font-size:1.8rem;
+  font-style:italic;
+  margin-bottom:8px;
+}
+.auth-logo .ago{color:var(--terra)}
+.auth-sub{
+  font-size:.9rem;
+  color:var(--inchiostro-soft);
+  margin-bottom:24px;
+}
+.auth-form{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.input-gruppo{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  text-align:left;
+}
+.input-gruppo label{
+  font-size:.8rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--oliva);
+}
+.input-testo{
+  padding:14px 16px;
+  border:2px solid var(--inchiostro);
+  border-radius:var(--r);
+  font-family:inherit;
+  font-size:1rem;
+  background:var(--carta);
+  color:var(--inchiostro);
+  transition:border-color .2s;
+}
+.input-testo:focus{
+  outline:none;
+  border-color:var(--terra);
+  background:#fff;
+}
+.btn-primary{
+  background:var(--terra);
+  color:var(--carta-2);
+  font-weight:800;
+  font-size:1rem;
+  padding:14px 24px;
+  border:2px solid var(--inchiostro);
+  border-radius:var(--r);
+  box-shadow:var(--ombra);
+  cursor:pointer;
+  transition:all .2s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.btn-primary:hover{
+  background:var(--terra-scuro);
+  transform:translateY(-2px);
+  box-shadow:var(--ombra-forte);
+}
+.btn-secondary{
+  background:var(--carta-2);
+  color:var(--inchiostro);
+  font-weight:700;
+  font-size:.9rem;
+  padding:10px 18px;
+  border:2px solid var(--inchiostro);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:all .2s;
+}
+.btn-secondary:hover{
+  background:var(--carta-3);
+}
+.btn-danger{
+  background:#d9534f;
+  color:#fff;
+  border:2px solid var(--inchiostro);
+  font-weight:700;
+  padding:8px 14px;
+  border-radius:var(--r);
+  cursor:pointer;
+}
+
+.messaggio-errore{
+  color:#b91c1c;
+  font-size:.85rem;
+  font-weight:700;
+  margin-top:6px;
+}
+
+/* ---- TESTATA ADMIN ---- */
+.admin-header{
+  background:var(--carta-2);
+  border-bottom:2px solid var(--inchiostro);
+  position:sticky;
+  top:0;
+  z-index:90;
+  box-shadow:0 2px 10px rgba(71,38,50,.08);
+}
+.admin-header-in{
+  max-width:1100px;
+  margin:0 auto;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.admin-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:1.3rem;
+  font-weight:700;
+  font-style:italic;
+}
+.admin-brand span{color:var(--terra)}
+.admin-azioni-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* ---- LAYOUT PRINCIPALE ADMIN ---- */
+.admin-main{
+  max-width:1100px;
+  margin:24px auto;
+  padding:0 20px;
+}
+
+/* ---- BARRA STATO E BARRA AZIONI ---- */
+.admin-bar{
+  background:var(--carta-2);
+  border:2px solid var(--inchiostro);
+  border-radius:var(--r);
+  padding:18px 20px;
+  box-shadow:var(--ombra);
+  margin-bottom:24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.stat-box{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.stat-num{
+  font-size:1.8rem;
+  font-family:'Fraunces',serif;
+  color:var(--terra);
+  font-weight:700;
+  line-height:1;
+}
+.stat-label{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--inchiostro-soft);
+}
+.cerca-box{
+  flex:1;
+  max-width:360px;
+  position:relative;
+}
+.cerca-input{
+  width:100%;
+  padding:10px 14px 10px 38px;
+  border:2px solid var(--inchiostro);
+  border-radius:30px;
+  font-family:inherit;
+  font-size:.9rem;
+  background:var(--carta);
+}
+.cerca-icona{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  color:var(--oliva);
+  pointer-events:none;
+}
+
+/* ---- LISTA SCHEDE BORSE ADMIN ---- */
+.admin-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(310px, 1fr));
+  gap:20px;
+}
+.admin-card{
+  background:var(--carta-2);
+  border:2px solid var(--inchiostro);
+  border-radius:var(--r);
+  box-shadow:var(--ombra);
+  padding:14px;
+  display:flex;
+  gap:14px;
+  position:relative;
+  transition:transform .2s, box-shadow .2s;
+}
+.admin-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--ombra-forte);
+}
+.admin-card-thumb{
+  width:90px;
+  height:110px;
+  border-radius:4px;
+  border:1px solid var(--inchiostro);
+  overflow:hidden;
+  flex-shrink:0;
+  background:#eee;
+}
+.admin-card-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.admin-card-info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  min-width:0;
+}
+.admin-card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:6px;
+}
+.admin-card-num{
+  font-size:.7rem;
+  font-weight:800;
+  background:var(--carta-3);
+  padding:2px 8px;
+  border-radius:4px;
+  color:var(--terra-scuro);
+}
+.admin-card-title{
+  font-size:1.15rem;
+  font-weight:700;
+  font-style:italic;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.admin-card-cat{
+  font-size:.8rem;
+  color:var(--inchiostro-soft);
+  margin-top:2px;
+}
+.admin-card-stato{
+  font-size:.75rem;
+  font-weight:700;
+  margin-top:4px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.admin-card-stato::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--puntino, var(--oliva));
+}
+.admin-card-actions{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+.btn-sm{
+  padding:6px 12px;
+  font-size:.8rem;
+  font-weight:700;
+  border:1.5px solid var(--inchiostro);
+  border-radius:4px;
+  background:var(--carta);
+  cursor:pointer;
+  transition:all .15s;
+}
+.btn-sm:hover{
+  background:var(--terra);
+  color:#fff;
+}
+.btn-sm-del:hover{
+  background:#d9534f;
+  color:#fff;
+}
+
+/* ---- MODALE FORM AGGIUNGI / MODIFICA ---- */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(71,38,50,.65);
+  z-index:100;
+  display:grid;
+  place-items:center;
+  padding:16px;
+  overflow-y:auto;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+}
+.modal-overlay.attiva{
+  opacity:1;
+  pointer-events:auto;
+}
+.modal-box{
+  background:var(--carta);
+  border:2.5px solid var(--inchiostro);
+  border-radius:12px;
+  box-shadow:10px 14px 0 rgba(71,38,50,.3);
+  max-width:680px;
+  width:100%;
+  max-height:92vh;
+  overflow-y:auto;
+  position:relative;
+  padding:28px 24px;
+  transform:translateY(20px);
+  transition:transform .3s cubic-bezier(.2,.7,.2,1);
+}
+.modal-overlay.attiva .modal-box{
+  transform:none;
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:16px;
+  border-bottom:2px dashed var(--filo);
+  margin-bottom:20px;
+}
+.modal-titolo{
+  font-size:1.5rem;
+  color:var(--inchiostro);
+}
+.modal-chiudi{
+  background:none;
+  border:2px solid var(--inchiostro);
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  font-weight:800;
+  font-size:1.1rem;
+  cursor:pointer;
+}
+.modal-chiudi:hover{
+  background:var(--terra);
+  color:#fff;
+}
+
+/* FORM DI CARICAMENTO FOTO MOBILE */
+.foto-upload-box{
+  border:2px dashed var(--terra);
+  border-radius:var(--r);
+  background:var(--carta-2);
+  padding:20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;
+}
+.foto-upload-box:hover{
+  background:var(--carta-3);
+}
+.foto-preview{
+  max-height:220px;
+  margin:0 auto 12px;
+  border-radius:6px;
+  border:1.5px solid var(--inchiostro);
+  display:block;
+  object-fit:cover;
+}
+.foto-upload-icona{
+  font-size:2.4rem;
+  margin-bottom:6px;
+}
+.foto-upload-testo{
+  font-size:.9rem;
+  font-weight:700;
+  color:var(--terra-scuro);
+}
+.foto-upload-sub{
+  font-size:.78rem;
+  color:var(--inchiostro-soft);
+  margin-top:4px;
+}
+
+.form-griglia{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+@media (max-width:600px){
+  .form-griglia{grid-template-columns:1fr}
+}
+.form-full{
+  grid-column:1 / -1;
+}
+
+/* OPTION COLORE PUNTINO STATO */
+.color-picker-group{
+  display:flex;
+  gap:12px;
+  margin-top:4px;
+}
+.color-opt{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  padding:6px 10px;
+  border:1.5px solid var(--inchiostro);
+  border-radius:20px;
+  background:var(--carta-2);
+}
+.color-opt input{accent-color:var(--terra)}
+.color-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+}
+
+/* STRUMENTI BACKUP / SERVER */
+.tools-box{
+  background:var(--carta-2);
+  border:2px solid var(--inchiostro);
+  border-radius:var(--r);
+  padding:18px;
+  margin-top:32px;
+  box-shadow:var(--ombra);
+}
+.tools-title{
+  font-size:1.1rem;
+  margin-bottom:12px;
+}
+.tools-btns{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* BANNER NOTIFICA */
+.toast-notifica{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:var(--inchiostro);
+  color:var(--carta-2);
+  padding:12px 20px;
+  border-radius:30px;
+  box-shadow:var(--ombra-forte);
+  font-weight:700;
+  font-size:.9rem;
+  z-index:200;
+  transform:translateY(100px);
+  opacity:0;
+  transition:all .3s cubic-bezier(.2,.7,.2,1);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.toast-notifica.visibile{
+  transform:none;
+  opacity:1;
+}

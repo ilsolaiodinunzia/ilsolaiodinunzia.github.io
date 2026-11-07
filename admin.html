@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Il solaio di Nunzia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Karla:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="auth-wrapper">
+  <div class="auth-box">
+    <div class="auth-logo">✳ Il solaio di <span class="ago">Nunzia</span></div>
+    <p class="auth-sub">Area Riservata — Gestione Catalogo</p>
+    <form class="auth-form" id="form-login">
+      <div class="input-gruppo">
+        <label for="password">Password di accesso</label>
+        <input type="password" id="password" class="input-testo" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-primary">Entra nel Pannello →</button>
+      <p class="messaggio-errore" style="display:none;">Password errata. Riprova.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<header class="admin-header" style="display:none;">
+  <div class="admin-header-in">
+    <div class="admin-brand">✳ Il solaio di <span>Nunzia</span> <small style="opacity:.6;font-size:.8em;font-style:normal">· ADMIN</small></div>
+    <div class="admin-azioni-top">
+      <button class="btn-primary" id="btn-add">➕ Nuova Borsa</button>
+      <a href="index.html" class="btn-secondary">👁️ Catalogo Pubblico</a>
+      <button class="btn-secondary" id="btn-logout">🔒 Esci</button>
+    </div>
+  </div>
+</header>
+
+<main class="admin-main" style="display:none;">
+  <div class="admin-bar">
+    <div class="stat-box">
+      <div class="stat-num" id="stat-num">0</div>
+      <div class="stat-label">Borse attualmente<br>nel catalogo</div>
+    </div>
+    <div class="cerca-box">
+      <span class="cerca-icona">🔍</span>
+      <input type="text" class="cerca-input" id="cerca" placeholder="Cerca per nome, materiale...">
+    </div>
+  </div>
+
+  <div class="admin-grid"></div>
+
+  <div class="tools-box">
+    <h3 class="tools-title">⚙️ Sincronizzazione & Backup</h3>
+    <p style="color:var(--inchiostro-soft);font-size:.9rem;margin-bottom:12px;">Puoi scaricare una copia di sicurezza delle borse o ripristinare il catalogo originale in qualsiasi momento.</p>
+    <div class="tools-btns">
+      <button class="btn-secondary" id="btn-backup-download">📥 Scarica Backup (JSON)</button>
+      <button class="btn-secondary" id="btn-backup-upload">📤 Carica Backup (JSON)</button>
+      <input type="file" id="backup-file" accept=".json" style="display:none;">
+      <button class="btn-danger" id="btn-backup-reset">🔄 Ripristina 10 borse iniziali</button>
+    </div>
+  </div>
+</main>
+
+<!-- MODALE FORM BORSA -->
+<div class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 class="modal-titolo">Nuova Borsa</h3>
+      <button class="modal-chiudi" type="button">✕</button>
+    </div>
+
+    <form id="form-borsa">
+      <!-- Foto -->
+      <div class="form-full" style="margin-bottom:20px;">
+        <label style="font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--oliva);display:block;margin-bottom:8px;">Foto della Borsa</label>
+        <div class="foto-upload-box">
+          <img class="foto-preview" style="display:none;" alt="Anteprima">
+          <div class="foto-upload-icona">📸</div>
+          <div class="foto-upload-testo">Scatta foto col cellulare o scegli da galleria</div>
+          <div class="foto-upload-sub">L'immagine verrà ottimizzata automaticamente per il web</div>
+          <input type="file" id="foto-file" accept="image/*" style="display:none;">
+        </div>
+        <div style="text-align:center;margin:12px 0;color:var(--inchiostro-soft);font-size:.85rem;">oppure inserisci URL:</div>
+        <input type="text" id="foto-url" class="input-testo" placeholder="https://...">
+      </div>
+
+      <div class="form-griglia">
+        <div>
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Nome borsa *</label>
+          <input type="text" name="nome" class="input-testo" required>
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Numero pezzo (Pz. N°)</label>
+          <input type="text" name="num" class="input-testo">
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Categoria</label>
+          <select name="cat" class="input-testo">
+            <option value="tote">Tote (Sporta)</option>
+            <option value="spalla">A spalla</option>
+            <option value="secchiello">Secchiello</option>
+            <option value="pochette">Pochette</option>
+            <option value="tracolla">Tracolla</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Anno di realizzazione</label>
+          <input type="text" name="anno" class="input-testo">
+        </div>
+        <div class="form-full">
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Materiali e tessuti</label>
+          <input type="text" name="materiali" class="input-testo">
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Misure (Dimensioni)</label>
+          <input type="text" name="misure" class="input-testo">
+        </div>
+        <div>
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Ore di cucito</label>
+          <input type="text" name="ore" class="input-testo">
+        </div>
+        <div class="form-full">
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Stato attuale (Adesso)</label>
+          <input type="text" name="stato" class="input-testo" placeholder="Es. In uso quotidiano, Regalata a...">
+        </div>
+        <div class="form-full">
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:8px;">Colore contrassegno</label>
+          <div class="color-picker-group">
+            <label class="color-opt">
+              <input type="radio" name="statoColore" value="--oliva" checked>
+              <span class="color-dot" style="background:var(--oliva)"></span> Malva
+            </label>
+            <label class="color-opt">
+              <input type="radio" name="statoColore" value="--terra">
+              <span class="color-dot" style="background:var(--terra)"></span> Lampone
+            </label>
+            <label class="color-opt">
+              <input type="radio" name="statoColore" value="--senape">
+              <span class="color-dot" style="background:var(--senape)"></span> Confetto
+            </label>
+          </div>
+        </div>
+        <div class="form-full">
+          <label style="font-size:.8rem;font-weight:800;color:var(--oliva);display:block;margin-bottom:6px;">Storia o nota della borsa ✎</label>
+          <textarea name="nota" class="input-testo" rows="3" style="resize:vertical;"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:2px dashed var(--filo);">
+        <button type="button" class="btn-secondary modal-chiudi-alt">✎ Annulla</button>
+        <button type="submit" class="btn-primary">💾 Salva Borsa</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

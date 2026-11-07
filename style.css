@@ -1,0 +1,325 @@
+/* ============================================================
+   LE BORSE DI ANITA — diario di cucito (palette rosa)
+   Cipria · carta · lampone · malva
+   Tipografia: Fraunces (titoli) · Karla (testo) · Caveat (note a mano)
+   ============================================================ */
+
+:root{
+  --carta:#faeef0;              /* cipria chiaro */
+  --carta-2:#fff9f9;            /* carta biancorosa */
+  --carta-3:#f4e1e5;            /* rosa polvere */
+  --inchiostro:#472632;         /* prugna scuro */
+  --inchiostro-soft:rgba(71,38,50,.62);
+  --terra:#c44d73;              /* lampone */
+  --terra-scuro:#963457;        /* lampone scuro */
+  --oliva:#a86f85;              /* malva */
+  --senape:#dd8fae;             /* rosa confetto */
+  --filo:#d9b6c1;               /* filo rosa */
+  --nastro:rgba(236,166,190,.55); /* nastro adesivo */
+  --ombra:4px 6px 0 rgba(71,38,50,.12);
+  --ombra-forte:7px 9px 0 rgba(71,38,50,.16);
+  --r:3px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Karla',sans-serif;
+  background:var(--carta);
+  color:var(--inchiostro);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+::selection{background:var(--terra);color:var(--carta-2)}
+
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+section{scroll-margin-top:92px}
+
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
+.caveat{font-family:'Caveat',cursive;font-size:1.5rem;color:var(--terra-scuro)}
+
+:focus-visible{outline:2px dashed var(--terra);outline-offset:4px;border-radius:2px}
+
+/* ---- grana della carta + filo di avanzamento ---- */
+.grana{
+  position:fixed;inset:0;z-index:80;pointer-events:none;
+  opacity:.30;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+.filo-progress{
+  position:fixed;top:0;left:0;height:4px;width:100%;
+  background:var(--terra);transform:scaleX(0);transform-origin:left;
+  z-index:90;
+}
+
+/* ---- contenitore ---- */
+.contenitore{max-width:1180px;margin-inline:auto;padding-inline:clamp(20px,4vw,40px)}
+
+/* ============================ TESTATA ============================ */
+.testata{
+  position:sticky;top:0;z-index:70;
+  background:var(--carta);
+  border-bottom:2px solid var(--inchiostro);
+}
+.testata-interno{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px clamp(20px,4vw,40px);
+  max-width:1180px;margin:0 auto;
+}
+.marchio{
+  font-family:'Fraunces',serif;font-weight:700;font-style:italic;
+  font-size:1.5rem;text-decoration:none;letter-spacing:.01em;
+  display:flex;align-items:center;gap:10px;white-space:nowrap;
+}
+.marchio .logo-img{
+  height:46px;width:auto;max-width:46px;
+  filter:saturate(.95) contrast(1.02);
+}
+.marchio .ago{color:var(--terra);font-style:normal;display:inline-block;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.marchio:hover .ago{transform:rotate(45deg)}
+.link-admin-discreto{
+  font-size:.85rem;font-weight:700;text-decoration:none;
+  padding:6px 14px;border:1.5px dashed var(--inchiostro);border-radius:999px;
+  background:var(--carta-2);color:var(--inchiostro);
+  transition:all .2s ease;
+}
+.link-admin-discreto:hover{
+  background:var(--inchiostro);color:var(--carta-2);border-style:solid;
+}
+
+/* ============================ APERTURA ============================ */
+.apertura{position:relative;padding:clamp(48px,7vw,90px) 0 70px;overflow:hidden}
+.apertura-griglia{
+  display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;
+}
+.occhiello{
+  display:inline-flex;align-items:center;gap:12px;
+  font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.22em;
+  color:var(--oliva);margin-bottom:22px;
+}
+.occhiello::before{content:"";width:42px;height:2px;background:repeating-linear-gradient(90deg,var(--oliva) 0 6px,transparent 6px 10px)}
+.titolo{font-size:clamp(2.6rem,6vw,4.6rem);letter-spacing:-.01em}
+.titolo em{font-style:italic;color:var(--terra)}
+.linea{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
+.linea-in{display:inline-block;transform:translateY(120%);transition:transform 1s cubic-bezier(.2,.75,.2,1)}
+.linea:nth-child(2) .linea-in{transition-delay:.12s}
+.linea:nth-child(3) .linea-in{transition-delay:.24s}
+.linea.in .linea-in{transform:none}
+
+.apertura p.intro{max-width:46ch;margin-top:26px;font-size:1.06rem;color:var(--inchiostro-soft)}
+.firma-apertura{margin-top:14px;transform:rotate(-1.5deg);display:inline-block}
+.etichetta-archivio{
+  display:inline-block;margin-top:26px;padding:7px 16px;
+  border:2px dashed var(--terra);color:var(--terra-scuro);
+  font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:.2em;
+  transform:rotate(-2deg);background:var(--carta-2);
+}
+.azioni{display:flex;gap:16px;margin-top:30px;flex-wrap:wrap}
+.bottone{
+  display:inline-block;text-decoration:none;font-weight:800;font-size:.95rem;
+  background:var(--terra);color:var(--carta-2);
+  padding:13px 24px;border:2px solid var(--inchiostro);border-radius:var(--r);
+  box-shadow:var(--ombra);transition:transform .2s,box-shadow .2s;
+}
+.bottone:hover{transform:translate(-2px,-2px);box-shadow:var(--ombra-forte)}
+.bottone:active{transform:translate(2px,2px);box-shadow:1px 2px 0 rgba(71,38,50,.2)}
+
+/* polaroid sparse */
+.scena{position:relative;height:clamp(400px,42vw,540px)}
+.pol{
+  position:absolute;background:#fffdf9;padding:10px 10px 40px;
+  border:1px solid rgba(71,38,50,.18);box-shadow:var(--ombra);
+  transform:rotate(var(--rot));transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s,z-index 0s;
+}
+.pol::before{ /* nastro adesivo */
+  content:"";position:absolute;top:-12px;left:50%;width:86px;height:26px;
+  transform:translateX(-50%) rotate(-3deg);
+  background:var(--nastro);box-shadow:0 1px 2px rgba(71,38,50,.12);
+}
+.pol img{width:100%;height:auto;filter:saturate(.95) contrast(1.02)}
+.pol figcaption{
+  position:absolute;bottom:6px;left:0;right:0;text-align:center;
+  font-family:'Caveat',cursive;font-size:1.3rem;color:var(--inchiostro-soft);
+}
+.pol:hover{transform:rotate(0deg) translateY(-8px) scale(1.03);box-shadow:var(--ombra-forte);z-index:5}
+.pol-1{top:6%;left:2%;width:min(240px,46%);--rot:-6deg}
+.pol-2{top:0;right:4%;width:min(215px,42%);--rot:5deg}
+.pol-3{bottom:4%;left:24%;width:min(255px,50%);--rot:-2deg;z-index:2}
+
+/* timbro rotante */
+.timbro{
+  position:absolute;bottom:0;left:-14px;width:128px;height:128px;z-index:6;
+  color:var(--terra-scuro);
+}
+.timbro svg{width:100%;height:100%;animation:gira 24s linear infinite}
+.timbro .centro{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-size:1.8rem;color:var(--terra);
+}
+@keyframes gira{to{transform:rotate(360deg)}}
+
+/* ============================ SEZIONI ============================ */
+.sezione{padding:clamp(60px,8vw,100px) 0 90px}
+.capitolo{
+  font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.24em;
+  color:var(--terra);margin-bottom:14px;
+}
+.titolo-sezione{font-size:clamp(1.9rem,4vw,3rem);max-width:22ch}
+.titolo-sezione em{font-style:italic;color:var(--terra)}
+
+/* animazioni di comparsa */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--r,0)*70ms)}
+.reveal.in{opacity:1;transform:none}
+
+/* ============================ CATALOGO ============================ */
+.catalogo-testa{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:34px}
+.conta-pezzi{font-family:'Caveat',cursive;font-size:1.35rem;color:var(--oliva);transform:rotate(-1deg)}
+
+.filtri{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:38px}
+.filtro{
+  padding:9px 18px;border:2px dashed var(--inchiostro);border-radius:999px;
+  background:transparent;font-weight:700;font-size:.85rem;letter-spacing:.04em;
+  transition:.25s;color:var(--inchiostro);
+}
+.filtro:hover{background:var(--carta-2);transform:translateY(-2px)}
+.filtro.attivo{background:var(--inchiostro);color:var(--carta-2);border-style:solid}
+
+.griglia{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:30px}
+
+.carta{
+  background:var(--carta-2);border:1.5px solid rgba(71,38,50,.25);
+  border-radius:var(--r);box-shadow:var(--ombra);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s;
+  cursor:pointer;
+}
+.carta:nth-child(odd){transform:rotate(.4deg)}
+.carta:nth-child(even){transform:rotate(-.4deg)}
+.carta:hover{transform:translateY(-7px) rotate(0deg);box-shadow:var(--ombra-forte)}
+.carta.nascosta{display:none}
+.carta.pop{animation:pop .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+
+.carta-foto{position:relative;overflow:hidden;aspect-ratio:4/5;border-bottom:1.5px solid rgba(71,38,50,.2)}
+.carta-foto img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1);filter:saturate(.95)}
+.carta:hover .carta-foto img{transform:scale(1.07) rotate(.5deg)}
+.pezzo{
+  position:absolute;top:12px;left:12px;background:var(--carta);
+  border:1.5px solid var(--inchiostro);padding:3px 10px;
+  font-weight:800;font-size:.7rem;letter-spacing:.14em;box-shadow:2px 3px 0 rgba(71,38,50,.18);
+}
+.ingrandisci{
+  position:absolute;bottom:12px;right:12px;background:var(--inchiostro);color:var(--carta-2);
+  font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:999px;
+  opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;
+}
+.carta:hover .ingrandisci{opacity:1;transform:none}
+
+.carta-corpo{padding:18px 18px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.carta-testa{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.carta-testa h3{font-size:1.35rem;font-style:italic;font-weight:600}
+.anno{font-weight:800;font-size:.75rem;color:var(--oliva);letter-spacing:.1em}
+.materiali-riga{font-size:.88rem;color:var(--inchiostro-soft)}
+.carta-piede{
+  margin-top:auto;padding-top:12px;border-top:2px dashed var(--filo);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.stato{font-weight:700;font-size:.78rem;display:inline-flex;align-items:center;gap:7px}
+.stato::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--puntino,var(--oliva));border:1px solid rgba(71,38,50,.4)}
+.guarda{
+  background:none;border:none;font-weight:800;font-size:.82rem;color:var(--terra);
+  letter-spacing:.04em;padding:4px 0;border-bottom:2px dashed var(--terra);
+  transition:.25s;
+}
+.guarda:hover{color:var(--terra-scuro);letter-spacing:.08em}
+
+.nota-archivio{margin-top:38px;text-align:center;font-family:'Caveat',cursive;font-size:1.4rem;color:var(--inchiostro-soft)}
+
+/* ============================ RIGA FINALE ============================ */
+.piede{
+  max-width:1180px;margin:0 auto;
+  padding:26px clamp(20px,4vw,40px) 46px;
+  border-top:2px dashed var(--filo);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  font-size:.85rem;color:var(--inchiostro-soft);
+}
+
+/* ============================ SIPARIO (dettaglio borsa) ============================ */
+.sipario{
+  position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;
+  background:rgba(71,38,50,.60);
+  opacity:0;transition:opacity .3s ease;
+}
+.sipario.aperto{opacity:1}
+.scheda{
+  background:var(--carta);border:2px solid var(--inchiostro);border-radius:var(--r);
+  box-shadow:10px 12px 0 rgba(71,38,50,.30);
+  width:min(880px,100%);max-height:88vh;overflow:auto;
+  display:grid;grid-template-columns:1fr 1fr;position:relative;
+  transform:translateY(24px) scale(.98);transition:transform .35s cubic-bezier(.2,.7,.2,1);
+}
+.sipario.aperto .scheda{transform:none}
+.scheda-foto{position:relative;background:#fffdf9;padding:16px;border-right:2px dashed var(--filo)}
+.scheda-foto img{width:100%;height:100%;object-fit:cover;min-height:320px}
+.scheda-foto::before{content:"";position:absolute;top:6px;left:50%;width:110px;height:28px;transform:translateX(-50%) rotate(-3deg);background:var(--nastro);z-index:2}
+.scheda-corpo{padding:34px 30px}
+.scheda-corpo .capitolo{margin-bottom:6px}
+.scheda-corpo h3{font-size:2.1rem;font-style:italic;font-weight:600}
+.scheda-dettagli{margin:22px 0;border-top:2px dashed var(--filo)}
+.scheda-dettagli div{
+  display:flex;justify-content:space-between;gap:14px;padding:9px 0;
+  border-bottom:2px dashed var(--filo);font-size:.92rem;
+}
+.scheda-dettagli dt{font-weight:800;text-transform:uppercase;font-size:.72rem;letter-spacing:.14em;color:var(--oliva);padding-top:3px}
+.scheda-dettagli dd{text-align:right;font-weight:600}
+.scheda-nota{font-family:'Caveat',cursive;font-size:1.5rem;color:var(--terra-scuro);transform:rotate(-1deg)}
+.chiudi{
+  position:absolute;top:12px;right:12px;z-index:3;
+  width:42px;height:42px;border:2px solid var(--inchiostro);border-radius:50%;
+  background:var(--carta);font-size:1.05rem;font-weight:800;
+  box-shadow:2px 3px 0 rgba(71,38,50,.25);transition:.25s;
+}
+.chiudi:hover{background:var(--terra);color:var(--carta-2);transform:rotate(90deg)}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:960px){
+  .apertura-griglia{grid-template-columns:1fr}
+  .scena{height:clamp(340px,70vw,440px);margin-top:10px}
+  .scheda{grid-template-columns:1fr}
+  .scheda-foto{border-right:0;border-bottom:2px dashed var(--filo)}
+  .scheda-foto img{min-height:0;max-height:340px}
+}
+
+/* ============================ MOVIMENTO RIDOTTO ============================ */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .linea-in{transform:none}
+  .reveal{opacity:1;transform:none}
+}
+/* ============================ LOGO IN APERTURA ============================ */
+.scena-logo{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 0;
+}
+.logo-apertura{
+  width:min(420px, 82%);
+  height:auto;
+  transform:rotate(-2deg);
+  filter:drop-shadow(6px 8px 0 rgba(71,38,50,.14));
+  transition:transform .45s cubic-bezier(.2,.7,.2,1);
+}
+.logo-apertura:hover{
+  transform:rotate(0deg) scale(1.03);
+}
+@media (max-width:960px){
+  .scena-logo{margin-top:10px}
+  .logo-apertura{width:min(320px, 70%)}
+}

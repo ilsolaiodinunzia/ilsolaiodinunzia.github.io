@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il solaio di Nunzia — catalogo cucito a mano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat&family=Fraunces:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Karla:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grana"></div>
+<div class="filo-progress"></div>
+
+<!-- ============================ TESTATA ============================ -->
+<header class="testata">
+  <div class="testata-interno">
+    <a href="index.html" class="marchio">
+      <img src="logo.png" alt="Logo Il solaio di Nunzia" class="logo-img">
+      <span>Il solaio di <span class="ago">Nunzia</span></span>
+    </a>
+  </div>
+</header>
+
+<!-- ============================ APERTURA ============================ -->
+<section class="apertura">
+  <div class="contenitore apertura-griglia">
+    <div>
+      <div class="occhiello">Diario di cucito · Torino · dal 2019</div>
+
+      <h1 class="titolo">
+        <span class="linea"><span class="linea-in">Borse cucite</span></span>
+        <span class="linea"><span class="linea-in">a mano, <em>una</em></span></span>
+        <span class="linea"><span class="linea-in">alla volta.</span></span>
+      </h1>
+
+      <p class="intro">Questa pagina non è un negozio: non ci sono carrelli né prezzi. È l'archivio delle borse che ho tagliato sul tavolo del solaio e cucito la sera, con calma. Molte sono già partite, in regalo; alcune restano qui, appese a un chiodo.</p>
+
+      <p class="firma-apertura caveat">— Nunzia, con la Singer del '74 di mia nonna ✎</p>
+
+      <div class="azioni">
+        <a href="#catalogo" class="bottone">Sfoglia il catalogo ↓</a>
+      </div>
+    </div>
+
+    <!-- LOGO al posto delle istantanee -->
+    <div class="scena-logo">
+      <img src="logo.png" alt="Logo Il solaio di Nunzia" class="logo-apertura">
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CATALOGO ============================ -->
+<section id="catalogo" class="sezione catalogo">
+  <div class="contenitore">
+
+    <div class="catalogo-testa">
+      <div>
+        <div class="capitolo">Fatto a mano · Pezzi unici · Cuciti a Torino · ✂</div>
+        <h2 class="titolo-sezione">Il <em>catalogo</em></h2>
+        <p style="margin-top:8px;color:var(--inchiostro-soft);">Ogni borsa è un pezzo solo, numerato a mano.</p>
+      </div>
+      <div class="conta-pezzi">-- pezzi censiti… ma altri dormono nei cassetti</div>
+    </div>
+
+    <ul class="griglia"></ul>
+
+    <p class="nota-archivio">— Nessun dato raccolto: solo storie. ✎</p>
+  </div>
+</section>
+
+<!-- ============================ PIE' DI PAGINA ============================ -->
+<footer class="piede">
+  <span>© Il solaio di Nunzia</span>
+  <span>Fatto a mano, con calma ✎</span>
+</footer>
+
+<!-- ============================ SIPARIO (Dettaglio borsa) ============================ -->
+<div class="sipario">
+  <div class="scheda"></div>
+</div>
+
+<!-- ============================ SCRIPT ============================ -->
+<script src="app.js"></script>
+<script>
+  // Animazione comparsa titolo all'apertura
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.linea').forEach(l => l.classList.add('in'));
+  });
+
+  // Filo di avanzamento scroll in alto
+  const filo = document.querySelector('.filo-progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    filo.style.transform = `scaleX(${pct})`;
+  });
+</script>
+</body>
+</html>
