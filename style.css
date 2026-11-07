@@ -93,7 +93,8 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
 }
 
 /* ============================ APERTURA ============================ */
-.apertura{position:relative;padding:clamp(48px,7vw,90px) 0 70px;overflow:hidden}
+/* MODIFICATO: padding inferiore ridotto da 70px a 22px per avvicinare il catalogo */
+.apertura{position:relative;padding:clamp(40px,5vw,64px) 0 22px;overflow:hidden}
 .apertura-griglia{
   display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;
 }
@@ -164,7 +165,8 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
 @keyframes gira{to{transform:rotate(360deg)}}
 
 /* ============================ SEZIONI ============================ */
-.sezione{padding:clamp(60px,8vw,100px) 0 90px}
+/* MODIFICATO: padding superiore ridotto da clamp(60px,8vw,100px) a clamp(26px,3.5vw,44px) */
+.sezione{padding:clamp(26px,3.5vw,44px) 0 90px}
 .capitolo{
   font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.24em;
   color:var(--terra);margin-bottom:14px;
@@ -302,6 +304,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
   .linea-in{transform:none}
   .reveal{opacity:1;transform:none}
 }
+
 /* ============================ LOGO IN APERTURA ============================ */
 .scena-logo{
   display:flex;
@@ -310,23 +313,16 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
   padding:10px 0;
 }
 .logo-apertura{
-width:min(420px, 82%);
-height:auto;
-transform:none;
-filter:drop-shadow(0 6px 0 rgba(71,38,50,.10));
-transition:transform .45s cubic-bezier(.2,.7,.2,1);
+  width:min(420px, 82%);
+  height:auto;
+  transform:none;
+  filter:drop-shadow(0 6px 0 rgba(71,38,50,.10));
+  transition:transform .45s cubic-bezier(.2,.7,.2,1);
 }
 .logo-apertura:hover{
-transform:scale(1.02);
+  transform:scale(1.02);
 }
 @media (max-width:960px){
   .scena-logo{margin-top:10px}
   .logo-apertura{width:min(320px, 70%)}
-}
-/* ---- AVVICINA APERTURA E CATALOGO ---- */
-.apertura{
-  padding:clamp(40px,5vw,64px) 0 22px;
-}
-#catalogo{
-  padding-top:clamp(26px,3.5vw,44px);
 }
