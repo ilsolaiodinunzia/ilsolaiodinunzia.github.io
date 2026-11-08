@@ -113,7 +113,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
 .linea.in .linea-in{transform:none}
 
 .apertura p.intro{max-width:46ch;margin-top:26px;font-size:1.06rem;color:var(--inchiostro-soft)}
-.firma-apertura{margin-top:14px;transform:rotate(-1.5deg);display:inline-block}
+.firma-apertura{margin-top:14px;display:inline-block}
 .etichetta-archivio{
   display:inline-block;margin-top:26px;padding:7px 16px;
   border:2px dashed var(--terra);color:var(--terra-scuro);
@@ -225,7 +225,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
 .carta-corpo{padding:18px 18px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .carta-testa{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .carta-testa h3{font-size:1.35rem;font-style:italic;font-weight:600}
-.anno{font-weight:800;font-size:.75rem;color:var(--oliva);letter-spacing:.1em}
+.anno{font-family:'Fraunces',serif;font-weight:700;font-size:2.6rem;line-height:1;color:var(--terra);letter-spacing:-.02em;text-align:right}
 .materiali-riga{font-size:.88rem;color:var(--inchiostro-soft)}
 .carta-piede{
   margin-top:auto;padding-top:12px;border-top:2px dashed var(--filo);
@@ -272,6 +272,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;line-height:1.08}
 .scheda-corpo{padding:34px 30px}
 .scheda-corpo .capitolo{margin-bottom:6px}
 .scheda-corpo h3{font-size:2.1rem;font-style:italic;font-weight:600}
+.scheda-corpo h3.anno-borsa{font-size:clamp(2.4rem,7vw,4.4rem);font-style:normal;font-weight:700;color:var(--terra);letter-spacing:-.02em;margin:6px 0 14px}
 .scheda-dettagli{margin:22px 0;border-top:2px dashed var(--filo)}
 .scheda-dettagli div{
   display:flex;justify-content:space-between;gap:14px;padding:9px 0;

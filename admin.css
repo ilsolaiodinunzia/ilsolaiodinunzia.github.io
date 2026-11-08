@@ -308,13 +308,15 @@ h1,h2,h3,h4{
   border-radius:4px;
   color:var(--terra-scuro);
 }
-.admin-card-title{
-  font-size:1.15rem;
+.admin-card-anno{
+  font-family:'Fraunces',serif;
+  font-size:2.2rem;
   font-weight:700;
-  font-style:italic;
+  color:var(--terra);
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  line-height:1;
 }
 .admin-card-cat{
   font-size:.8rem;

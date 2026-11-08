@@ -258,7 +258,7 @@ function initPublicUI() {
 
   function render(borse) {
     griglia.innerHTML = '';
-    if (contaPezzi) contaPezzi.textContent = `${borse.length} pezzi censiti… ma altri dormono nei cassetti`;
+    if (contaPezzi) contaPezzi.textContent = `${borse.length} pezzi censiti`;
 
     borse.forEach((b, i) => {
       const li = document.createElement('li');
@@ -271,7 +271,7 @@ function initPublicUI() {
           <span class="ingrandisci">🔍 Guarda</span>
         </div>
         <div class="carta-corpo">
-          <div class="carta-testa"><h3>${b.nome}</h3><span class="anno">${b.anno}</span></div>
+          <div class="carta-testa"><span class="anno">${b.anno}</span></div>
           <p class="materiali-riga">${b.materiali}</p>
         </div>`;
       li.addEventListener('click', () => apriSipario(b.id));
@@ -292,9 +292,8 @@ function initPublicUI() {
       <div class="scheda-foto"><img src="${b.foto}" alt="${b.nome}"></div>
       <div class="scheda-corpo">
         <div class="capitolo">Pezzo n. ${b.num} — ${b.cat}</div>
-        <h3>${b.nome}</h3>
+        <h3 class="anno-borsa">${b.anno}</h3>
         <dl class="scheda-dettagli">
-          <div><dt>Anno</dt><dd>${b.anno}</dd></div>
           <div><dt>Materiali</dt><dd>${b.materiali}</dd></div>
           <div><dt>Misure</dt><dd>${b.misure}</dd></div>
           <div><dt>Ore di cucito</dt><dd>${b.ore}</dd></div>
@@ -395,7 +394,7 @@ function initAdminUI() {
         <div class="admin-card-info">
           <div class="admin-card-head">
             <span class="admin-card-num">Pz. ${b.num}</span>
-            <span class="admin-card-title">${b.nome}</span>
+            <span class="admin-card-anno">${b.anno}</span>
           </div>
           <div class="admin-card-cat">${b.cat} · ${b.anno}</div>
           <div class="admin-card-stato" style="--puntino:var(${b.statoColore})">${b.stato}</div>
